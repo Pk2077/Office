@@ -1,0 +1,162 @@
+﻿@model OfficeManagement.Models.Employee
+
+<style>
+    .form-control {
+        border-left: 2px solid red;
+        border-radius: 0;
+    }
+
+    .form-select {
+        border-left: 2px solid red;
+        border-radius: 0;
+    }
+</style>
+
+
+<div class="form-group">
+    <input id="txt_Id" type="hidden" value="@Model.Id" />
+    <div class="row row-mb-4">
+        <div class="col-md-2">
+            <label class="form-label">Name</label>
+        </div>
+
+        <div class="col-md-4">
+            <input id="txt_Name" type="text" class="form-control" value="@Model.Name" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Designation</label>
+        </div>
+        <div class="col-md-4">
+            <input id="txt_Designation" type="text" class="form-control" value="@Model.Designation" />
+        </div>
+    </div>
+
+    <div class="row ">
+        <div class="col-md-2">
+            <label class="form-label">Date Of Join</label>
+        </div>
+        <div class="col-md-4">
+            <input id="txt_DateOfJoin" type="Date" class="form-control" value="@Model.DateOfJoin.ToString("yyyy-MM-dd")" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Salary</label>
+        </div>
+        <div class="col-md-4">
+            <input id="txt_Salary" type="text" class="form-control" value="@(Model.Salary != 0 ? Model.Salary.ToString("0.00"):"")" />
+        </div>
+    </div>
+
+    <div class="row ">
+        <div class="col-md-2">
+            <label class="form-label">Gender</label>
+        </div>
+        <div class="col-md-4">
+            <input id="txt_Gender" type="text" class="form-control" value="@Model.Gender" />
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">State</label>
+        </div>
+        <div class="col-md-4">
+            <select id="txt_State" class="form-select">
+                <option>Select State</option>
+                @if (Model != null)
+                {
+                    <option @(Model.State == "1" ? "selected" : "") value="1">Andhra Pradesh</option>
+                    <option @(Model.State == "2" ? "selected" : "") value="2">Telangana</option>
+                }
+                else
+                {
+                    <option value="1">Andhra Pradesh</option>
+                    <option value="2">Telangana</option>
+                }
+            </select>
+        </div>
+    </div>
+    <div class="row ">
+        <div class="col-md-2">
+            <button id="btn_Save" class="btn btn-primary">Save</button>
+        </div>
+        <div class="col-md-2">
+            <button id="btn_Back" class="btn btn-secondary">back</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    $('#btn_Save').click(function () {
+
+        if ($('#txt_Name').val() == '') {
+            alert('Name is mandatory.');
+            return;
+        }
+        if ($('#txt_Designation').val() == '') {
+            alert('Designation is mandatory.');
+            return;
+        }
+        if ($('#txt_DateOfJoin').val() == '') {
+            alert('Date Of Join is mandatory.');
+            return;
+        }
+        if ($('#txt_Salary').val() == '') {
+            alert('Salary is mandatory.');
+            return;
+        }
+        if ($('#txt_Gender').val() == '') {
+            alert('Gender is mandatory.');
+            return;
+        }
+        if ($('#txt_State').val() == '') {
+            alert('State is mandatory.');
+            return;
+        }
+
+        $.ajax({
+            url: '@Url.Action("SaveEmployee", "Employee")',
+            type: 'POST',
+            data: {
+                Id: $('#txt_Id').val(),
+                Name: $('#txt_Name').val(),
+                Designation: $('#txt_Designation').val(),
+                DateOfJoin: $('#txt_DateOfJoin').val(),
+                Salary: $('#txt_Salary').val(),
+                Gender: $('#txt_Gender').val(),
+                State: $('#txt_State').val()
+            },
+            success: function (response) {
+                if (response.status) {
+                    alert(response.Message);
+                    $('#txt_Name').val('');
+                    $('#txt_Designation').val('');
+                    $('#txt_DateOfJoin').val('');
+                    $('#txt_Salary').val('');
+                    $('#txt_Gender').val('');
+                    $('#txt_State').val('');
+                }
+                else {
+                    alert(response.Message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+    $('#btn_Back').click(function () {
+        $('#NewForm').hide();
+        $('#EmpList').show();
+        $('#btn_addEmployee').show();
+        $.ajax({
+            url: '@Url.Action("GetEmployees", "Employee")',
+            type: 'POST',
+            data: {
+            },
+            success: function (response) {
+                $('#EmpList').html(response);
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    })
+</script>
+

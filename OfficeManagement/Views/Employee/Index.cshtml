@@ -1,0 +1,120 @@
+﻿@model List<OfficeManagement.Models.Employee>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+<link href="~/Content/jquery-confirm.css" rel="stylesheet" />
+<script src="~/Scripts/jquery-confirm.js"></script>
+
+<div style="margin-bottom:20px;">
+    <button id="btn_addEmployee" class="btn btn-primary">Add Employee</button>
+</div>
+
+<div id="EmpList">
+    @Html.Partial("~/Views/Employee/List.cshtml", Model)
+</div>
+
+
+<div id="NewForm" style="line-height: 45px;display:none;"></div>
+
+<script>
+    $('#btn_addEmployee').click(function () {
+        $.ajax({
+            url: '@Url.Action("NewEmployee", "Employee")',
+            type: 'POST',
+            data: {},
+            success: function (response) {
+                $('#NewForm').html(response);
+
+                $('#EmpList').hide();
+                $('#btn_addEmployee').hide();
+                $('#NewForm').show();
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+
+    $(document).on('click','.btn_editEmployee',function () {
+        var SelectedEmp = $(this);
+        var id = SelectedEmp.closest('tr').find('.clEmpId').val();
+        $.ajax({
+            url: '@Url.Action("EditEmployee", "Employee")',
+            type: 'POST',
+            data: {
+                id: id
+            },
+            success: function (response) {
+                $('#NewForm').html(response);
+
+                $('#EmpList').hide();
+                $('#btn_addEmployee').hide();
+                $('#NewForm').show();
+
+            },
+            error: function (xhr, status, error) {
+                console.log(error);
+            }
+        });
+    });
+
+    $(document).on('click', '.clDelete', function () {
+        var SelectedEmp = $(this);
+        $.confirm({
+            title: 'Confirm!',
+            content: 'Are you sure you want to delete ?',
+            buttons: {
+                Yes: function () {
+                    var id = SelectedEmp.closest('tr').find('.clEmpId').val();
+                    $.ajax({
+                        url: '@Url.Action("DeleteEmployee", "Employee")',
+                        type: 'POST',
+                        data: {
+                            id: id
+                        },
+                        success: function (response) {
+                            if (response.status) {
+                                alert(response.Message);
+                                $.ajax({
+                                    url: '@Url.Action("GetEmployees", "Employee")',
+                                    type: 'POST',
+                                    data: {
+                                    },
+                                    success: function (response) {
+                                        $('#EmpList').html(response);
+                                    },
+                                    error: function (xhr, status, error) {
+                                        console.log(error);
+                                    }
+                                });
+                            } else {
+                                alert(response.Message);
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(error);
+                        }
+                    });
+                },
+                No: function () {
+                    //$.alert('Canceled!');
+                }
+            }
+        });
+    });
+
+    $("#btn_export").click(function () {
+        $.confirm({
+            title: 'Confirm!',
+            content: 'Do you want to export report to the Excel?',
+            buttons: {
+                Yes: function () {
+                    var strURL = '@Url.Action("ExportExcel", "Employee")';
+                    var win = window.open(strURL, '_self');
+                },
+                No: function () {
+                }
+            }
+        })
+    });
+</script>

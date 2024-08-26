@@ -1,0 +1,64 @@
+﻿@model List<OfficeManagement.Models.Employee> 
+
+<style>
+    #tbl_emp thead th {
+        background-color: #4f81bd;
+        color: #fff;
+        max-height: 25px;
+        padding-top: 0px;
+        padding-right: 0px;
+        padding-bottom: 0px;
+    }
+    #tbl_emp tbody td {
+        background-color: #b8cce4;
+        color: #000;
+        max-height: 25px;
+        padding-top: 0px;
+        padding-right: 0px;
+        padding-bottom: 0px;
+    }
+</style>
+
+<table id="tbl_emp" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>S.No</th>
+            <th>Name</th>
+            <th>Designation</th>
+            <th>DOJ</th>
+            <th>Salary</th>
+            <th>Gender</th>
+            <th>State</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @{ 
+            int i = 1;
+        }
+        @foreach (var emp in Model)
+        {
+            <tr>
+                <td>@i <input class="clEmpId" type="hidden" value="@emp.Id" /></td>
+                <td><a style="cursor:pointer;" class="link-dark btn_editEmployee">@emp.Name</a></td>
+                <td>@emp.Designation</td>
+                <td>@emp.DateOfJoin.ToString("dd/MM/yyyy")</td>
+                <td>@emp.Salary.ToString("0.00")</td>
+                <td>@emp.Gender</td>
+                <td>@emp.State</td>
+                <td style="text-align: center; font-size: 18px; color: #4f81bd;padding:0;"><span class="fa-solid fa-trash-can clDelete"></span></td>
+            </tr>
+            i++;
+        }
+    <tr>
+        <td></td>
+        <td></td>
+        <td>Total</td>
+        <td></td>
+        <td>@Model.Select(x => x.Salary).ToList().Sum()</td>
+        <td></td>
+        <td></td>
+        <td></td>
+    </tr>
+    </tbody>
+</table>
